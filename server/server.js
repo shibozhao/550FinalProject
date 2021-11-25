@@ -34,6 +34,15 @@ app.get('/sort_avgheight', routes.sort_avgheight)
 // Route 8 - register as GET 
 app.get('/lifespan', routes.lifespan)
 
+// Route 9 - register as GET 
+app.get('/image', routes.image)
+
+// Route 10 - register as GET 
+app.get('/pictures', routes.pictures)
+
+// Route 11 - register as GET 
+app.get('/dog_filter', routes.dog_filter)
+
 app.listen(config.server_port, () => {
     console.log(`Server running at http://${config.server_host}:${config.server_port}/`);
 });

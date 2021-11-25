@@ -228,6 +228,96 @@ async function lifespan(req, res) {
 
 }
 
+// Route 9 (handler)
+async function image(req, res) {
+    // Returns the image for a given breed
+    // Examples:
+    // Find the image for Affenpinscher in FCI database: http://127.0.0.1:8080/image?breed=AFFENPINSCHER
+
+    sql = `SELECT image
+           FROM FCIBreed FCI
+           Where TRUE `
+    
+    if (req.query.breed){sql += `AND FCI.name = '${req.query.breed}' `}
+
+    connection.query(sql, function (error, results, fields) {
+        if (error) {
+            console.log(error)
+            res.json({ error: error })
+        } else if (results) {
+            res.json({ results: results })
+        }
+    });
+
+}
+
+// Route 10 (handler)
+async function pictures(req, res) {
+    // Returns all pictures for a given breed
+    // Examples:
+    // Find all pictures for Affenpinscher: http://127.0.0.1:8080/pictures?breed=AFFENPINSCHER
+
+    sql = `SELECT breed, url
+           FROM Dog_Pic
+           Where TRUE `
+    
+    if (req.query.breed){sql += `AND UPPER(breed) = '${req.query.breed}' `}
+
+    connection.query(sql, function (error, results, fields) {
+        if (error) {
+            console.log(error)
+            res.json({ error: error })
+        } else if (results) {
+            res.json({ results: results })
+        }
+    });
+
+}
+
+
+// Route 11 (handler)
+async function dog_filter(req, res) {
+    // This is a master dog filter for searching dog by criteria. It returns breed name and country. 
+    // Example: Returns all breeds that exists in all 3 databases
+    // http://127.0.0.1:8080/dog_filter  
+    // Another example: 
+    // Returns all breeds that have a minAverageLifeSpan of 11 years, Intelligence at least 3 and Energy Level at most 4 
+    // http://127.0.0.1:8080/dog_filter?minAverageLifeSpan=11&minStarsIntelligence=3&maxStarsEnergyLevel=4
+
+
+    sql = `SELECT FCI.name, FCI.country
+           FROM FCIBreed FCI 
+           JOIN DogBreedParameters DBP on FCI.name = UPPER(DBP.name)
+           JOIN DogBreedsEnriched DBE on FCI.name = UPPER(DBE.breed)
+           WHERE TRUE `
+    
+    if (req.query.breed){sql += `AND UPPER(breed) = '${req.query.breed}' `}
+    if (req.query.minAverageHeight){sql += `AND DBE.AverageHeight >= '${req.query.minAverageHeight}' `}
+    if (req.query.maxAverageHeight){sql += `AND DBE.AverageHeight <= '${req.query.maxAverageHeight}' `}
+    if (req.query.minAverageWeight){sql += `AND DBE.AverageWeight >= '${req.query.minAverageWeight}' `}
+    if (req.query.maxAverageWeight){sql += `AND DBE.AverageWeight <= '${req.query.maxAverageWeight}' `}
+    if (req.query.minAverageLifeSpan){sql += `AND DBE.AverageLifeSpan >= '${req.query.minAverageLifeSpan}' `}
+    if (req.query.maxAverageLifeSpan){sql += `AND DBE.AverageLifeSpan <= '${req.query.maxAverageLifeSpan}' `}
+
+    if (req.query.minStarsAdaptability){sql += `AND DBP.starsAdaptability >= '${req.query.minStarsAdaptability}' `}
+    if (req.query.maxStarsAdaptability){sql += `AND DBP.starsAdaptability <= '${req.query.maxStarsAdaptability}' `}
+    if (req.query.minStarsstarsFriendliness){sql += `AND DBP.starsFriendliness >= '${req.query.minStarsFriendliness}' `}
+    if (req.query.maxStarsstarsFriendliness){sql += `AND DBP.starsFriendliness <= '${req.query.maxStarsFriendliness}' `}
+    if (req.query.minStarsIntelligence){sql += `AND DBP.starsIntelligence >= '${req.query.minStarsIntelligence}' `}
+    if (req.query.maxStarsIntelligence){sql += `AND DBP.starsIntelligence <= '${req.query.maxStarsIntelligence}' `}
+    if (req.query.minStarsEnergyLevel){sql += `AND DBP.starsEnergyLevel >= '${req.query.minStarsEnergyLevel}' `}
+    if (req.query.maxStarsEnergyLevel){sql += `AND DBP.starsEnergyLevel <= '${req.query.maxStarsEnergyLevel}' `}
+
+    connection.query(sql, function (error, results, fields) {
+        if (error) {
+            console.log(error)
+            res.json({ error: error })
+        } else if (results) {
+            res.json({ results: results })
+        }
+    });
+
+}
 
 
 module.exports = {
@@ -239,5 +329,8 @@ module.exports = {
     stars,
     sort_lifespan,
     sort_avgheight,
-    lifespan
+    lifespan,
+    image,
+    pictures,
+    dog_filter
 }
