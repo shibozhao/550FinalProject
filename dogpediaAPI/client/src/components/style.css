@@ -1,0 +1,53 @@
+.center {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.formCenter {
+    display: flex;
+    margin-left: '30vw';
+    margin-right: '30vw';
+}
+
+
+.searchCenter {
+    width: '42vw';
+    display: flex;
+    flex:2;
+    Align-Items: center;
+    Justify-Content: center;
+}
+
+.textCenter {
+    margin: auto;
+  width: 40%;
+  padding: 10px;
+}
+
+.highlightCenter {
+
+  width: 60%;
+  padding: 10px;
+  margin-top: '500vw';
+  margin-bottom: '500vw';
+  margin-left: auto;
+    margin-right: auto;
+}
+
+.buttonSection {
+    display:flex;
+    height: 70px;
+    padding-top: 18px;
+    top: 53px;
+    z-index: 0;
+    Align-Items: center;
+    Justify-Content: center;
+}
+
+.radarSection {
+    display:flex;
+    Align-Items: center;
+    Justify-Content: center;
+    margin-top: auto;
+}
