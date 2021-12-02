@@ -195,6 +195,7 @@ class CriteriaPage extends React.Component {
             }} dataSource={this.state.breedResults} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}>
                 <Column title="Breed" dataIndex="name" key="name" sorter= {(a, b) => a.Breed.localeCompare(b.Breed)}/>
                 <Column title="Country" dataIndex="country" key="country" sorter= {(a, b) => a.Country.localeCompare(b.Country)}/>
+                <Column title="Group" dataIndex="group" key="group" sorter= {(a, b) => a.Country.localeCompare(b.Country)}/>
             </Table>
 
             </div>
