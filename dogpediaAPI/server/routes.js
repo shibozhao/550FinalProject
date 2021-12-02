@@ -95,7 +95,7 @@ async function search_criteria(req, res) {
     const intelligenceHigh = req.query.intelligenceHigh
     const adaptbilityLow = req.query.adaptbilityLow
     const adaptbilityHigh = req.query.adaptbilityHigh
-    connection.query(`SELECT FCI.name AS name, FCI.country AS country
+    connection.query(`SELECT FCI.name AS name, FCI.country AS country, DBE.breedGroupUKC AS 'group'
     FROM FCIBreed FCI JOIN DogBreedParameters DBP ON FCI.name = DBP.name JOIN DogBreedsEnriched DBE ON FCI.name = DBE.breed
     WHERE FCI.country LIKE '%${country}%' AND DBE.breedGroupUKC LIKE '%${group}%' 
       AND DBE.AverageLifeSpan >= ${lifespanLow} AND DBE.AverageLifeSpan <= ${lifespanHigh} AND DBE.AverageWeight >= ${weightLow} AND DBE.AverageWeight <= ${weightHigh} 
