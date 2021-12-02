@@ -82,6 +82,8 @@ class HomeSearchPage extends React.Component {
         <br></br>
         
         <img src='./dog.png' alt= 'dogicon' className="center" height ='250' weight='250'/>
+        <br></br>
+        <br></br>
         <div className="center">
         <Form className="searchCenter">
             <Row>
