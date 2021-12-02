@@ -28,12 +28,6 @@ class MenuBar extends React.Component {
               Search by Criteria
             </NavLink>
           </NavItem>
-
-          <NavItem>
-            <NavLink active href="/login">
-              Log In
-            </NavLink>
-          </NavItem>
             
           </Nav>
       </Navbar>
