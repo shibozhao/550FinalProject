@@ -1,0 +1,88 @@
+1. Dog_Pic Used Index strategy
+
+Before: 423 ms 
+ 
+SELECT *
+FROM Dog_Pic
+WHERE Dog_Pic.breed ='${name}'
+
+
+
+After:245 ms
+
+CREATE INDEX dog_pic_breed
+ON Dog_Pic (breed)
+
+SELECT *
+FROM Dog_Pic
+WHERE Dog_Pic.breed ='${name}'
+
+
+
+2. Push selection and projection down to the root.
+
+Before: 532 ms
+
+SELECT FCI.name AS name, DBP.highlights AS hightlight, FCI.image AS imageUrl, DBE.breedGroupUKC AS subgroup, FCI.country AS country, DBP.starsAdaptability AS adaptbility, DBP.starsFriendliness AS friendliness, DBP.starsIntelligence AS intelligence,  DBP.starsEnergyLevel AS energy, DBP.starsEasyToTrain AS easyToTrain, DBE.AverageHeight AS aveHeight, DBE.AverageWeight AS aveWeight, DBE.AverageLifeSpan AS aveLifespan
+FROM FCIBreed FCI JOIN DogBreedsEnriched DBE JOIN DogBreedParameters DBP
+WHERE FCI.name = '${name}' AND  DBP.name = '${name}' AND DBE.breed = '${name}'
+
+After: 200 ms
+
+WITH FCI AS(
+        SELECT FCIBreed.name AS name, FCIBreed.image AS imageUrl, FCIBreed.country AS country
+        FROM FCIBreed
+        WHERE FCIBreed.name = '${name}'
+    ),
+    
+    DBP AS(
+        SELECT DBP.name AS name, DBP.highlights AS hightlight, DBP.starsAdaptability AS adaptbility,
+               DBP.starsFriendliness AS friendliness, DBP.starsIntelligence AS intelligence,
+               DBP.starsEnergyLevel AS energy, DBP.starsEasyToTrain AS easyToTrain
+        FROM DogBreedParameters DBP
+        WHERE DBP.name = '${name}'
+    ),
+    DBE AS(
+        SELECT DBE.breed AS name, DBE.breedGroupAKC AS subgroup, DBE.AverageHeight AS aveHeight,
+               DBE.AverageWeight AS aveWeight, DBE.AverageLifeSpan AS aveLifespan
+        FROM DogBreedsEnriched DBE
+        WHERE DBE.breed = '${name}'
+    )
+    SELECT *
+    FROM FCI JOIN DBP ON FCI.name = DBP.name JOIN DBE ON FCI.name = DBE.name
+
+3. Push selection and projection down to the root.
+Before: 559ms
+SELECT FCI.name AS name, FCI.country AS country, DBE.breedGroupAKC AS 'group'
+FROM FCIBreed FCI JOIN DogBreedParameters DBP JOIN DogBreedsEnriched DBE
+WHERE FCI.country LIKE '%Great%' AND DBE.breedGroupAKC LIKE '%Terrier%'
+AND DBE.AverageLifeSpan >= 1 AND DBE.AverageLifeSpan <= 100 AND DBE.AverageWeight >= 1 AND DBE.AverageWeight <= 100
+AND DBE.AverageHeight >= 1 AND DBE.AverageHeight <= 100 AND DBP.starsFriendliness >= 1 AND DBP.starsFriendliness <= 100
+AND DBP.starsIntelligence >= 1 AND DBP.starsIntelligence <= 100 AND DBP.starsAdaptability >= 1 AND DBP.starsAdaptability <= 100
+GROUP BY FCI.name
+
+After: 176ms
+
+WITH FCI AS(
+    SELECT FCI.name AS name, FCI.country AS country
+    FROM FCIBreed FCI
+    WHERE FCI.country LIKE '%Great%'
+),
+DBP AS(
+    SELECT DBP.name AS name
+    FROM DogBreedParameters DBP
+    WHERE DBP.starsFriendliness >= 1 AND DBP.starsFriendliness <= 100
+    AND DBP.starsIntelligence >= 1 AND DBP.starsIntelligence <= 100 AND DBP.starsAdaptability >= 1
+    AND DBP.starsAdaptability <= 100
+),
+DBE AS(
+    SELECT DBE.breedGroupAKC AS 'group', DBE.breed AS name
+    FROM DogBreedsEnriched DBE
+    WHERE DBE.AverageLifeSpan >= 1 AND DBE.AverageLifeSpan <= 100 AND DBE.AverageWeight >= 1
+    AND DBE.AverageWeight <= 100
+    AND DBE.AverageHeight >= 1 AND DBE.AverageHeight <= 100
+)
+SELECT FCI.name AS name, FCI.country AS country, DBE.group AS 'group'
+FROM FCI JOIN DBE ON FCI.name = DBE.name JOIN DBP ON FCI.name = DBP.name
+
+
